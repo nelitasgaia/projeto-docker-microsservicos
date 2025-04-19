@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dio_db
+      MYSQL_USER: dio_user
+      MYSQL_PASSWORD: dio_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_volume:/var/lib/mysql
+
+  stress:
+    image: progrium/stress
+    container_name: stress_container
+    command: --cpu 1 --timeout 30s
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_container
+    ports:
+      - "8081:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+
+volumes:
+  mysql_volume:
